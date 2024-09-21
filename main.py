@@ -1,16 +1,21 @@
-# This is a sample Python script.
+from ina219 import INA219, DeviceRangeError
+from time import sleep
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+SHUNT_OHMS = 0.1
+MAX_EXPECTED_AMPS = 0.5
+ina = INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS)
+ina.configure(ina.RANGE_16V)
 
+def read_ina219():
+    try:
+        print('Bus Voltage: {0:0.2f}V'.format(ina.voltage()))
+        print('Bus Current: {0:0.2f}mA'.format(ina.current()))
+        print('Power: {0:0.2f}mW'.format(ina.power()))
+        print('Shunt Voltage: {0:0.2f}mV\n'.format(ina.shunt_voltage()))
+    except DeviceRangeError as e:
+        # Current out of device range with specified shunt resister
+        print(e)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+while 1:
+    read_ina219()
+    sleep(1)
